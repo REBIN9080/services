@@ -19,11 +19,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-public class ChessController implements ChessDelegate,ActionListener{
+public class ChessController implements ChessDelegate,ActionListener
+
+{
 	private String SOCKET_SERVER_ADDR = "localhost";
  	private int PORT =50000;
 	private ChessModel chessModel = new ChessModel();
-	
 	private JFrame frame;
 	private ChessView chessBoardPanel;
 	private JButton resetBtn;
@@ -33,78 +34,97 @@ public class ChessController implements ChessDelegate,ActionListener{
 	private Socket socket;
 	private ServerSocket listener;
 	
-	 ChessController() {
-		 
-	 chessModel.reset();
-	 
-	 frame = new JFrame("Chess");
-	 
-	frame.setSize(500, 550);
-	frame.setLocation(200, 1300);
-	frame.setLayout(new BorderLayout());
-	
-	chessBoardPanel = new ChessView(this);
-	
-	frame.add(chessBoardPanel, BorderLayout.CENTER);
-	
-	var buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	 resetBtn = new JButton("Reset");
-	resetBtn.addActionListener(this);
-	buttonsPanel.add(resetBtn);
-	
-	serverBtn = new JButton("listen");
-	buttonsPanel.add(serverBtn);
-	serverBtn.addActionListener(this);
-	
-	clientBtn = new JButton("Connect");
-	buttonsPanel.add(clientBtn);
-	clientBtn.addActionListener(this);
-	
-	frame.add(buttonsPanel, BorderLayout.PAGE_END);
-	
-	frame.setVisible(true);
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	frame.addWindowListener(new WindowAdapter() {
+	 ChessController() 
+	 {
+		 		//reset method has called from chess model class
+		 		chessModel.reset();
+		 		
+		 		//details of frame developing
+		 		frame = new JFrame("Chess");
+		 		frame.setSize(500, 550);
+		 		frame.setLocation(200, 1300);
+		 		frame.setLayout(new BorderLayout());
+		 		
+		 		//create the chess board panel
+		 		chessBoardPanel = new ChessView(this);
+		 		frame.add(chessBoardPanel, BorderLayout.CENTER);
+		 		var buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 		
+		 		//create the reset button
+		 		resetBtn = new JButton("Reset");
+		 		resetBtn.addActionListener(this);
+		 		buttonsPanel.add(resetBtn);
+		 		
+		 		//create the server button
+				serverBtn = new JButton("listen");
+				buttonsPanel.add(serverBtn);
+				serverBtn.addActionListener(this);
+				
+				//create the client button
+				clientBtn = new JButton("Connect");
+				buttonsPanel.add(clientBtn);
+				clientBtn.addActionListener(this);
+				
+				//chess board visible command
+				frame.add(buttonsPanel, BorderLayout.PAGE_END);
+				frame.setVisible(true);
+				
+				//when you stop the or click right corner of the cross simple ,the server will be automatically stop
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				
+				
+				frame.addWindowListener(new WindowAdapter()
+				{
 					@Override
-					public void windowClosing(WindowEvent e) {
+					public void windowClosing(WindowEvent e)
+					{
 						super.windowClosing(e);
 						if(printWriter != null)printWriter.close();
-					
-						try {
+						try 
+						{
 							if(listener != null)listener.close();
 							if(socket !=  null)socket.close();
-						} catch (IOException e1) {
+						} 
+						catch (IOException e1) 
+						{
 							e1.printStackTrace();
 						}
 					}
 	
-	});
+				});
 	 } 
 	 
 	//main class
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		new ChessController();
-		
 	}
 
 	@Override
-	public ChessPiece pieceAt(int col, int row) {
+	public ChessPiece pieceAt(int col, int row) 
+	{
 		return chessModel.pieceAt(col, row);
 	}
 
-
+	//movePiece method has called fromchessModel
 	@Override
-	public void movePiece(int fromCol, int fromRow, int toCol, int toRow) {
-	chessModel.movePiece(fromCol, fromRow, toCol, toRow);
+	public void movePiece(int fromCol, int fromRow, int toCol, int toRow)
+	{
+		chessModel.movePiece(fromCol, fromRow, toCol, toRow);
 		chessBoardPanel.repaint();
-		if(printWriter !=null) {
+		if(printWriter !=null)
+		{
 		printWriter.println(fromCol + ","+fromRow + ","+ toCol + ","+toRow);
 		}
 		
 	}
-	private void receiveMove(Scanner scanner) {
+	
+	//scanning the moving pieces
+	private void receiveMove(Scanner scanner) 
+	{
 		
-		while(scanner.hasNextLine()) {
+		while(scanner.hasNextLine()) 
+		{
 			var moveStr = scanner.nextLine();
 			System.out.println("chess move received" + moveStr);
 			var moveStrArr = moveStr.split(",");
@@ -112,73 +132,85 @@ public class ChessController implements ChessDelegate,ActionListener{
 			var fromRow = Integer.parseInt(moveStrArr[1]);
 			var toCol = Integer.parseInt(moveStrArr[2]);
 			var toRow = Integer.parseInt(moveStrArr[3]);
-			
-			SwingUtilities.invokeLater(new Runnable() {
-				
+			SwingUtilities.invokeLater(new Runnable() 
+			{
 				@Override
-				public void run() {
+				public void run() 
+				{
 					chessModel.movePiece(fromCol, fromRow, toCol, toRow);
 					chessBoardPanel.repaint();
-					
 				}
 			});
 		}
 	}
-	public void runSocketServer() {
-		
-		Executors.newFixedThreadPool(1).execute(new Runnable() {
-			
+	
+	//to run the socket server
+	public void runSocketServer() 
+	{
+		Executors.newFixedThreadPool(1).execute(new Runnable()
+		{
 			@Override
-			public void run() {
-				try {
+			public void run() 
+			{
+				try 
+				{
 					listener = new ServerSocket(PORT);
 					System.out.println("server is listening on port" +PORT);
-					
-						 socket = listener.accept();
-							printWriter =new PrintWriter(socket.getOutputStream(),true);
-							var scanner = new Scanner(socket.getInputStream());
-				
-						receiveMove(scanner);
-					}catch (Exception e1) {
+					socket = listener.accept();
+					printWriter =new PrintWriter(socket.getOutputStream(),true);
+					var scanner = new Scanner(socket.getInputStream());
+					receiveMove(scanner);
+					}
+				catch (Exception e1) 
+				{
 					e1.printStackTrace();
 				 }
 			}
 		});
-}
-private void runSocketClient() {
-	
-	try {
-		
-			socket = new Socket(SOCKET_SERVER_ADDR,PORT);
-			System.out.println("client connected to port" + PORT);
-			var scanner = new Scanner(socket.getInputStream());
-		printWriter = new PrintWriter(socket.getOutputStream(),true);
-			
-	Executors.newFixedThreadPool(1).execute(new Runnable() {
-		
-		@Override
-		public void run() {
-			receiveMove(scanner);
-			
-		}
-	});
-}  catch (IOException e1) {
-		e1.printStackTrace();
 	}
-}
+	
+	//to run the socket client
+	private void runSocketClient() 
+	{
+			try 
+			{
+				socket = new Socket(SOCKET_SERVER_ADDR,PORT);
+				System.out.println("client connected to port" + PORT);
+				var scanner = new Scanner(socket.getInputStream());
+				printWriter = new PrintWriter(socket.getOutputStream(),true);
+				
+				//execute the moving places
+				Executors.newFixedThreadPool(1).execute(new Runnable() 
+				{
+					@Override
+					public void run() 
+					{
+						receiveMove(scanner);
+					}
+				});
+				
+			}  
+			catch (IOException e1) 
+			{
+				e1.printStackTrace();
+			}
+	}
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		
+	public void actionPerformed(ActionEvent e) 
+	{
 		System.out.println(e.getSource());
-		if(e.getSource() == resetBtn) {
+		if(e.getSource() == resetBtn)
+		{
 			chessModel.reset();
 			chessBoardPanel.repaint();
-			
-			try {
-				if(listener != null) {
+			try 
+			{
+				if(listener != null) 
+				{
 				listener.close();
 				}
-				if(socket != null) {
+				if(socket != null) 
+				{
 				socket.close();
 				}
 				serverBtn.setEnabled(true);
@@ -186,25 +218,22 @@ private void runSocketClient() {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-		}else if(e.getSource() == serverBtn){	
+		}
+		else if(e.getSource() == serverBtn)
+		{	
 			serverBtn.setEnabled(false);
 			clientBtn.setEnabled(false);
 			frame.setTitle("chess server");
 			runSocketServer();
 			JOptionPane.showMessageDialog(frame, "Listening on PORT " + PORT);
 		}	
-		else if(e.getSource() == clientBtn){
+		else if(e.getSource() == clientBtn)
+		{
 			serverBtn.setEnabled(false);
 			clientBtn.setEnabled(false);
 			frame.setTitle("chess client");
 			runSocketClient();
 			JOptionPane.showMessageDialog(frame, "connected to PORT " + PORT);
 		}
-		
-	
-		
-		
 	}
-
-
-	}
+}

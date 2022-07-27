@@ -1,6 +1,9 @@
 package com.goldthump.chess;
 
-public interface ChessConstants {
+//interface of all chess pieces
+public interface ChessConstants 
+
+{
 	final static String  bRook = "rook-black"; 
 	final static String  wRook = "rook-white"; 
 	final static String  bKnight ="knight-black"; 
