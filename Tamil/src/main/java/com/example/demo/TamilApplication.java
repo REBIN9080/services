@@ -8,7 +8,7 @@ public class TamilApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TamilApplication.class, args);
-		//this is tamil project
+		//this is  project
 	}
 
 }
