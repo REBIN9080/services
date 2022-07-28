@@ -7,7 +7,7 @@ public class ChessModel {
 		
 		//create the hash-set of chess piece class
 		private Set<ChessPiece> piecesBox = new HashSet<ChessPiece>();
-		
+		//tyduktduktdtudtu
 		//create the turn of white piece
 		private Player playerInTurn =Player.WHITE;
 		
