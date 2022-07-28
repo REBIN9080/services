@@ -62,6 +62,7 @@ public class ChessView extends JPanel implements MouseListener,MouseMotionListen
 				ChessConstants.wPawn,
 				 
 		 		};
+		 		//this is the image loading try catch
 		 			try 
 		 			{
 		 					for (String imgNm : imageNames) 
