@@ -8,6 +8,10 @@ public class GitttyApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GitttyApplication.class, args);
+		
+		LAW main = new LAW();
+		main.sysout();
+		
 	}
 
 }
